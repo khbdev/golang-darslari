@@ -3,14 +3,30 @@ package main
 import (
 	"encoding/json"
 	"fmt"
-	"io"
+
 	"net/http"
 
 )
-func postHandler(w http.ResponseWriter, r * http.Request){
-	bodyBytes, _ := io.ReadAll(r.Body)
-	fmt.Println("Body: ", string(bodyBytes))
+
+type User struct{
+	Name string `json:"name"`
+	Age int `json:"age"`
 }
+
+func UserFunc(w http.ResponseWriter, r *http.Request){
+   var user User
+
+   err := json.NewDecoder(r.Body).Decode(&user)
+   if err != nil {
+	http.Error(w, "Json natogri", http.StatusBadRequest)
+	return
+   }
+
+   fmt.Println("Name", user.Name)
+   fmt.Println("Age", user.Age)
+}
+
+
 
 func oneroute(w http.ResponseWriter, r * http.Request){
 	w.Header().Set("Content-type", "application/json")
@@ -26,7 +42,7 @@ date := map[string]string{"xabar": "Salom json"}
 }
 
 func main() {
-	http.HandleFunc("/post", postHandler)
+	http.HandleFunc("/users", UserFunc)
 	http.HandleFunc("/", oneroute)
         http.HandleFunc("/salom", handler)
     http.ListenAndServe(":8082", nil)
