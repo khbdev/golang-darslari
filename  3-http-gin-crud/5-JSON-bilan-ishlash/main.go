@@ -13,6 +13,12 @@ type User struct {
 func main() {
     r := gin.Default()
 
+
+    r.GET("/get", func(ctx *gin.Context) {
+        ctx.JSON(200, gin.H{
+            "message": "udp-test",
+        })
+    })
    
     r.POST("/users", func(c *gin.Context) {
         var user User
@@ -30,5 +36,5 @@ func main() {
         })
     })
 
-    r.Run() 
+    r.Run(":8001") 
 }

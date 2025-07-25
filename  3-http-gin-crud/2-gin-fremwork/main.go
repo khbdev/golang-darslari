@@ -1,28 +1,51 @@
 package main
 
-import (
-	"fmt"
+import "github.com/gin-gonic/gin"
 
-	"github.com/gin-gonic/gin"
-)
-var msg string = "salom"
+type User struct {
+    Name string `json:"name"`
+    Age  int    `json:"age"`
+}
 
-func forlet() []string {
-	var message []string
-	for i := 0; i < 1000; i++ {
-	message = append(message, fmt.Sprintf("%d: %s", i+1, msg))
-}
-return message
-}
 
 func main(){
-	r := gin.Default()
+	router := gin.Default()
 
-	r.GET("/hello",  func(c *gin.Context) {
-		c.JSON(200, gin.H{
-			"messages": forlet(),
+	router.GET("/about", func(ctx *gin.Context) {
+		respone := map[string]string{
+			"message": "Salom, bu json javob",
+		}
+		ctx.JSON(200, respone)
+	})
+	router.GET("/param/:id", func(ctx *gin.Context) {
+		id := ctx.Param("id")
+		ctx.JSON(200, gin.H{
+			"message": "Foydalnuvchi id: " + id,
 		})
 	})
+	router.GET("/query", func(ctx *gin.Context) {
+	    query := ctx.Query("name");
+		if  query == "" {
+			query = "Mehmod"
+		}
+		ctx.JSON(200, gin.H{
+			"xat": "Salom, " + query + "!", 
+		})
+	})
+	router.POST("/user", func(c *gin.Context) {
+        var user User
+        if err := c.BindJSON(&user); err != nil {
+            c.JSON(400, gin.H{"error": "Noto'g'ri JSON format"})
+            return
+        }
+        c.JSON(200, gin.H{
+            "message": "Foydalanuvchi qabul qilindi",
+            "name":    user.Name,
+            "age":     user.Age,
+        })
+    })
 
-	r.Run(":8001")
+
+	router.Run(":8002")
+
 }
