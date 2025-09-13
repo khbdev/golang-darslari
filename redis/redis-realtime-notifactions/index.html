@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Todos Real-time</title>
+</head>
+<body>
+  <h2>Todos</h2>
+  <ul id="todos"></ul>
+
+  <script>
+    const socket = new WebSocket("ws://localhost:8085/ws");
+
+    socket.onmessage = function(event) {
+      const todo = JSON.parse(event.data);
+      const li = document.createElement("li");
+      li.textContent = todo.title;
+      document.getElementById("todos").appendChild(li);
+    };
+  </script>
+</body>
+</html>
